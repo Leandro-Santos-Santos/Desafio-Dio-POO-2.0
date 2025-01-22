@@ -1,16 +1,37 @@
 package br.com.dio.desafio.dominio;
 
 import java.util.LinkedHashSet;
+import java.util.Optional;
 import java.util.Set;
 
 public class Dev {
     private String nome;
-    private Set<Conteudo> conteudoInscritos = new LinkedHashSet<>();
-    private Set<Conteudo> conteudoConcluidos = new LinkedHashSet<>();
+    private Set<Conteudo> conteudosInscritos = new LinkedHashSet<>();
+    private Set<Conteudo> conteudosConcluidos = new LinkedHashSet<>();
 
-    public void inscreverBootcamp(Bootcamp bootcamp){}
-    public void progredir() {}
-    public void calcularTotalXp() {}
+    public void inscreverBootcamp(Bootcamp bootcamp){
+        this.conteudosInscritos.addAll(bootcamp.getConteudos());
+        bootcamp.getDevInscritos().add(this);
+    }
+
+    public void progredir() {
+        Optional<Conteudo> conteudo = this.conteudosInscritos.stream().findFirst();
+        if(conteudo.isPresent()) {
+            this.conteudosConcluidos.add(conteudo.get());
+            this.conteudosInscritos.remove(conteudo.get());
+        }else{
+            System.err.println("Você não está matriculado em nenhum conteúdo da DIO!");
+        }
+    }
+    
+    public double calcularTotalXp() {
+        return this.conteudosConcluidos
+            .stream()
+            .mapToDouble(Conteudo::calcularXp)
+            .sum();
+
+    }
+    
     
     public String getNome() {
         return nome;
@@ -19,16 +40,16 @@ public class Dev {
         this.nome = nome;
     }
     public Set<Conteudo> getConteudoInscritos() {
-        return conteudoInscritos;
+        return conteudosInscritos;
     }
     public void setConteudoInscritos(Set<Conteudo> conteudoInscritos) {
-        this.conteudoInscritos = conteudoInscritos;
+        this.conteudosInscritos = conteudoInscritos;
     }
     public Set<Conteudo> getConteudoConcluidos() {
-        return conteudoConcluidos;
+        return conteudosConcluidos;
     }
     public void setConteudoConcluidos(Set<Conteudo> conteudoConcluidos) {
-        this.conteudoConcluidos = conteudoConcluidos;
+        this.conteudosConcluidos = conteudoConcluidos;
     }
     
     @Override
@@ -36,8 +57,8 @@ public class Dev {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((nome == null) ? 0 : nome.hashCode());
-        result = prime * result + ((conteudoInscritos == null) ? 0 : conteudoInscritos.hashCode());
-        result = prime * result + ((conteudoConcluidos == null) ? 0 : conteudoConcluidos.hashCode());
+        result = prime * result + ((conteudosInscritos == null) ? 0 : conteudosInscritos.hashCode());
+        result = prime * result + ((conteudosConcluidos == null) ? 0 : conteudosConcluidos.hashCode());
         return result;
     }
     @Override
@@ -54,15 +75,15 @@ public class Dev {
                 return false;
         } else if (!nome.equals(other.nome))
             return false;
-        if (conteudoInscritos == null) {
-            if (other.conteudoInscritos != null)
+        if (conteudosInscritos == null) {
+            if (other.conteudosInscritos != null)
                 return false;
-        } else if (!conteudoInscritos.equals(other.conteudoInscritos))
+        } else if (!conteudosInscritos.equals(other.conteudosInscritos))
             return false;
-        if (conteudoConcluidos == null) {
-            if (other.conteudoConcluidos != null)
+        if (conteudosConcluidos == null) {
+            if (other.conteudosConcluidos != null)
                 return false;
-        } else if (!conteudoConcluidos.equals(other.conteudoConcluidos))
+        } else if (!conteudosConcluidos.equals(other.conteudosConcluidos))
             return false;
         return true;
     }
